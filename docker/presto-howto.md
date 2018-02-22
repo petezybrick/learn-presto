@@ -35,6 +35,8 @@ mysql -t -u root -p < employees.sql
 
 Delete test_db-master from presto/data
 
+Download the CLI https://prestodb.io/docs/current/installation/cli.html
+
 
  
  
