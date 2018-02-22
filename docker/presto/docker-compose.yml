@@ -23,7 +23,6 @@ services:
   presto-worker1:
     image: presto:0.194
     command: python2.7 /usr/local/presto/bin/launcher.py run
-# tail -F -n0 /etc/hosts
 # python2.7 /usr/local/presto/bin/launcher.py start
     hostname: presto-worker1
     container_name: presto-worker1
