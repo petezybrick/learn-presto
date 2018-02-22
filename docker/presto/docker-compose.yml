@@ -1,0 +1,56 @@
+version: '2'
+
+services:
+  presto-coordinator:
+    image: presto:0.194
+    command: python2.7 /usr/local/presto/bin/launcher.py run
+# tail -F -n0 /etc/hosts
+# python2.7 /usr/local/presto/bin/launcher.py start
+    hostname: presto-coordinator
+    container_name: presto-coordinator
+    mem_limit: 16G
+    memswap_limit: 16G
+#    environment:
+#      MASTER: spark://iote2e-spark-master:7077
+    expose:
+      - 8080
+    ports:
+      - 8090:8080
+    volumes:
+      - ./etc/coordinator:/usr/local/presto/etc
+      - ./data:/tmp/data
+  
+  presto-worker1:
+    image: presto:0.194
+    command: python2.7 /usr/local/presto/bin/launcher.py run
+# tail -F -n0 /etc/hosts
+# python2.7 /usr/local/presto/bin/launcher.py start
+    hostname: presto-worker1
+    container_name: presto-worker1
+    mem_limit: 16G
+    memswap_limit: 16G
+#    environment:
+#      MASTER: spark://iote2e-spark-master:7077
+    expose:
+      - 8080
+    ports:
+      - 8091:8080
+    volumes:
+      - ./etc/worker1:/usr/local/presto/etc
+      - ./data:/tmp/data
+    
+  presto-mysql:
+    image: mysql:5.6
+    command: mysqld_safe
+    hostname: presto-mysql
+    container_name: presto-mysql
+    mem_limit: 8g
+    memswap_limit: 8g
+    expose:
+      - 3306
+    ports:
+      - 3307:3306
+    volumes:
+      - ./data:/tmp/data
+
+ 
