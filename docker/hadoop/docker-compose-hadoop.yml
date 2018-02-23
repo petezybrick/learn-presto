@@ -1,0 +1,57 @@
+version: '2'
+
+services:
+  hdfs-namenode:
+    image: hadoop:2.9.0
+    command: hdfs namenode
+    hostname: hdfs-namenode
+    container_name: hdfs-namenode
+    expose:
+      - 50070
+    ports:
+      - 50070:50070
+    volumes:
+      - ./data:/tmp/data
+
+  hdfs-secondarynamenode:
+    image: hadoop:2.9.0
+    command: hdfs secondarynamenode
+    hostname: hdfs-secondarynamenode
+    container_name: hdfs-secondarynamenode
+    expose:
+      - 50090
+    ports:
+      - 50090:50090
+    volumes:
+      - ./data:/tmp/data
+    depends_on:
+      - hdfs-namenode
+
+  hdfs-datanode1:
+    image: hadoop:2.9.0
+    command: hdfs datanode
+    hostname: hdfs-datanode1
+    container_name: hdfs-datanode1
+    expose:
+      - 50075
+    ports:
+      - 50075:50075
+    volumes:
+      - ./data:/tmp/data
+    depends_on:
+      - hdfs-secondarynamenode
+      
+ 
+  hdfs-datanode2:
+    image: hadoop:2.9.0
+    command: hdfs datanode
+    hostname: hdfs-datanode2
+    container_name: hdfs-datanode2
+    expose:
+      - 50076
+    ports:
+      - 50076:50076
+    volumes:
+      - ./data:/tmp/data
+    depends_on:
+      - hdfs-secondarynamenode      
