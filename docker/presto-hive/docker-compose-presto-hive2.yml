@@ -1,0 +1,110 @@
+version: '2'
+
+services:
+    
+  presto-hive-mysql:
+    image: mysql:5.6
+    command: mysqld_safe
+    hostname: presto-hive-mysql
+    container_name: presto-hive-mysql
+    mem_limit: 8g
+    memswap_limit: 8g
+    expose:
+      - 3306
+    ports:
+      - 3307:3306
+    volumes:
+      - ./data:/tmp/data
+  
+  presto-hive-namenode:
+    image: hadoop:2.9.0
+    command: hdfs namenode
+    hostname: presto-hive-namenode
+    container_name: presto-hive-namenode
+    expose:
+      - 50070
+      - 9083
+    ports:
+      - 50070:50070
+      - 9083:9083
+    volumes:
+      - ./data:/tmp/data
+    depends_on:
+      - presto-hive-mysql
+
+  presto-hive-secondarynamenode:
+    image: hadoop:2.9.0
+    command: hdfs secondarynamenode
+    hostname: presto-hive-secondarynamenode
+    container_name: presto-hive-secondarynamenode
+    expose:
+      - 50090
+    ports:
+      - 50090:50090
+    volumes:
+      - ./data:/tmp/data
+
+  presto-hive-datanode1:
+    image: hadoop:2.9.0
+    command: hdfs datanode
+    hostname: presto-hive-datanode1
+    container_name: presto-hive-datanode1
+    expose:
+      - 50075
+    ports:
+      - 50075:50075
+    volumes:
+      - ./data:/tmp/data
+    depends_on:
+      - presto-hive-secondarynamenode
+ 
+  presto-hive-datanode2:
+    image: hadoop:2.9.0
+    command: hdfs datanode
+    hostname: presto-hive-datanode2
+    container_name: presto-hive-datanode2
+    expose:
+      - 50076
+    ports:
+      - 50076:50076
+    volumes:
+      - ./data:/tmp/data
+    depends_on:
+      - presto-hive-secondarynamenode      
+
+
+  presto-hive-coordinator:
+    image: presto:0.194
+    command: python2.7 /usr/local/presto/bin/launcher.py run
+# tail -F -n0 /etc/hosts
+    hostname: presto-hive-coordinator
+    container_name: presto-hive-coordinator
+    mem_limit: 16G
+    memswap_limit: 16G
+    expose:
+      - 8080
+    ports:
+      - 8090:8080
+    volumes:
+      - ./etc/coordinator:/usr/local/presto/etc
+      - ./data:/tmp/data
+    depends_on:
+      - presto-hive-secondarynamenode      
+  
+  presto-hive-worker1:
+    image: presto:0.194
+    command: python2.7 /usr/local/presto/bin/launcher.py run
+    hostname: presto-hive-worker1
+    container_name: presto-hive-worker1
+    mem_limit: 16G
+    memswap_limit: 16G
+    expose:
+      - 8080
+    ports:
+      - 8091:8080
+    volumes:
+      - ./etc/worker1:/usr/local/presto/etc
+      - ./data:/tmp/data
+    depends_on:
+      - presto-hive-coordinator      
+ 
