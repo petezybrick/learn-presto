@@ -7,8 +7,8 @@ services:
     command: mysqld_safe
     hostname: presto-hive-mysql
     container_name: presto-hive-mysql
-    mem_limit: 8g
-    memswap_limit: 8g
+    mem_limit: 2g
+    memswap_limit: 2g
     expose:
       - 3306
     ports:
@@ -21,14 +21,20 @@ services:
     command: hdfs namenode
     hostname: presto-hive-namenode
     container_name: presto-hive-namenode
+    mem_limit: 2g
+    memswap_limit: 2g
     expose:
       - 50070
       - 9083
+      - 10000
     ports:
       - 50070:50070
       - 9083:9083
+      - 10000:10000
     volumes:
       - ./data:/tmp/data
+      - ./conf-hive:/usr/local/hive/conf
+      - ./etc-hadoop:/usr/local/hadoop/etc/hadoop
     depends_on:
       - presto-hive-mysql
 
@@ -38,12 +44,16 @@ services:
     command: hdfs secondarynamenode
     hostname: presto-hive-secondarynamenode
     container_name: presto-hive-secondarynamenode
+    mem_limit: 2g
+    memswap_limit: 2g
     expose:
       - 50090
     ports:
       - 50090:50090
     volumes:
       - ./data:/tmp/data
+      - ./conf-hive:/usr/local/hive/conf
+      - ./etc-hadoop:/usr/local/hadoop/etc/hadoop
     depends_on:
       - presto-hive-namenode      
 
@@ -52,12 +62,16 @@ services:
     command: hdfs datanode
     hostname: presto-hive-datanode1
     container_name: presto-hive-datanode1
+    mem_limit: 2g
+    memswap_limit: 2g
     expose:
       - 50075
     ports:
       - 50075:50075
     volumes:
       - ./data:/tmp/data
+      - ./conf-hive:/usr/local/hive/conf
+      - ./etc-hadoop:/usr/local/hadoop/etc/hadoop
     depends_on:
       - presto-hive-secondarynamenode
  
@@ -66,12 +80,16 @@ services:
     command: hdfs datanode
     hostname: presto-hive-datanode2
     container_name: presto-hive-datanode2
+    mem_limit: 2g
+    memswap_limit: 2g
     expose:
       - 50076
     ports:
       - 50076:50076
     volumes:
       - ./data:/tmp/data
+      - ./conf-hive:/usr/local/hive/conf
+      - ./etc-hadoop:/usr/local/hadoop/etc/hadoop
     depends_on:
       - presto-hive-secondarynamenode      
 
@@ -82,8 +100,8 @@ services:
 # tail -F -n0 /etc/hosts
     hostname: presto-hive-coordinator
     container_name: presto-hive-coordinator
-    mem_limit: 16G
-    memswap_limit: 16G
+    mem_limit: 2g
+    memswap_limit: 2g
     expose:
       - 8080
     ports:
@@ -99,8 +117,8 @@ services:
     command: python2.7 /usr/local/presto/bin/launcher.py run
     hostname: presto-hive-worker1
     container_name: presto-hive-worker1
-    mem_limit: 16G
-    memswap_limit: 16G
+    mem_limit: 2g
+    memswap_limit: 2g
     expose:
       - 8080
     ports:

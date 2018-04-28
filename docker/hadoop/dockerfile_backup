@@ -16,13 +16,6 @@ RUN ln -s /usr/local/hadoop-${HADOOP_VERSION} $HADOOP_HOME  && \
 
 COPY conf  $HADOOP_HOME/etc/hadoop/
 
-RUN groupadd hadoop
-RUN useradd hadoop -g hadoop -d $HADOOP_HOME
-RUN echo 'hadoop:hadoop' | chpasswd
-RUN chgrp -R hadoop $HADOOP_HOME
-RUN chown -R hadoop $HADOOP_HOME
-
-
 # Formatting HDFS
 RUN mkdir -p /data/dfs/data /data/dfs/name /data/dfs/namesecondary && \
     hdfs namenode -format
@@ -39,12 +32,6 @@ RUN ln -s /usr/local/apache-hive-${HIVE_VERSION}-bin $HIVE_HOME  && \
     mkdir -p /usr/local/apache-hive-${HIVE_VERSION}-bin/logs
 
 COPY mysql-connector-java-8.0.11.jar  $HIVE_HOME/lib/mysql-connector-java-8.0.11.jar
-
-RUN groupadd hive
-RUN useradd hive -g hive -d $HIVE_HOME
-RUN echo 'hive:hive' | chpasswd
-RUN chgrp -R hive $HIVE_HOME
-RUN chown -R hive $HIVE_HOME
 
 
 CMD ["hdfs"]

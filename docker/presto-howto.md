@@ -37,6 +37,42 @@ Delete test_db-master from presto/data
 
 Download the CLI https://prestodb.io/docs/current/installation/cli.html
 
+Setup Hive to use MySQL as Schema Storage
+1. review this link for hive-site.xml https://stackoverflow.com/questions/35449274/java-lang-runtimeexception-unable-to-instantiate-org-apache-hadoop-hive-ql-metahadoo
+2. Review presto-hive/conf-hive and notice the volume mapping 
+3. Review hadoop/dockerfile, note that MySQL connector is copied to /usr/local/hive/lib
+	3.1 Note that I tried MySQL Connector 5 first, then staring hive metastore just hung, so used mysql-connector-java-8.0.11.jar
+4. tried hive command, got: runtime exception on org.apache.hadoop.hive.ql.metadata.SessionHiveMetaStoreClient
+5. as per that link above, opened MySQL session and ran this sql: /usr/local/hive/scripts/metastore/upgrade/mysql/hive-schema-2.3.0.mysql.sql
+	copied the schema files hive-schema-2.3.0.mysql.sql and hive-txn-schema-2.3.0.mysql.sql to ./data
+	docker exec -it presto-hive-mysql /bin/bash
+	cd /tmp/data
+	mysql -u root -p
+	use metastore;
+	source /tmp/data/hive-schema-2.3.0.mysql.sql
+6. Manually start hive: hive --service metastore
+7. That seemed to work, could bring up hive cli, "show databases", "show tables", "select * from asdf" worked as expected
+8. Restarted cluster, exec'ed into namenode, ran above queries
+
+
+Hive setup, verify with basic table
++ this link will help http://www.informit.com/articles/article.aspx?p=2755708&seqNum=3
++ disabled file system permissions - hdfs-site.xml, dfs.permissions.enabled, just makes it easier during development
++ docker exec -it presto-hive-mysql /bin/bash
++ hdfs dfs -mkdir -p /user/pete
++ open hive
+	+ create database db_people
+	+ run the create table in person_create_table.sql
+	+ load the p1.tsv file:  LOAD DATA LOCAL INPATH '/tmp/data/person/p1.tsv' OVERWRITE INTO TABLE db_people.person;
+	+ run a couple of queries to verify
+		select * from db_people.person;
+		select * from db_people.person where birth_date>'1965-01-01';
+	
+	
 
  
  
+hive --service hiveserver2 &
+
+echo 'myuser:mypass' | chpasswd
+

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<?xml version="1.0"?>
 <!-- Licensed under the Apache License, Version 2.0 (the "License"); you 
 	may not use this file except in compliance with the License. You may obtain 
 	a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless 
@@ -8,33 +7,21 @@
 	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
 	the specific language governing permissions and limitations under the License. 
 	See accompanying LICENSE file. -->
-
-<!-- Put site-specific property overrides in this file. -->
-
 <configuration>
 	<property>
-		<name>dfs.replication</name>
-		<value>2</value>
+		<name>yarn.nodemanager.aux-services</name>
+		<value>mapreduce_shuffle</value>
 	</property>
 	<property>
-		<name>dfs.datanode.data.dir</name>
-		<value>file:///data/dfs/data</value>
+		<name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+		<value>org.apache.hadoop.mapred.ShuffleHandler</value>
 	</property>
 	<property>
-		<name>dfs.namenode.name.dir</name>
-		<value>file:///data/dfs/name</value>
+		<name>yarn.resourcemanager.hostname</name>
+		<value>yarn</value>
 	</property>
 	<property>
-		<name>dfs.namenode.checkpoint.dir</name>
-		<value>file:///data/dfs/namesecondary </value>
-	</property>
-	<property>
-		<name>dfs.namenode.datanode.registration.ip-hostname-check</name>
-		<value>false</value>
-	</property>
-	<property>
-		<name>dfs.permissions.enabled</name>
-		<!-- Development Only! -->
-		<value>false</value>
+		<name>yarn.nodemanager.hostname</name>
+		<value>yarn</value>
 	</property>
 </configuration>
